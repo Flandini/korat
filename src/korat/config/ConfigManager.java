@@ -114,6 +114,11 @@ public class ConfigManager {
     public boolean cvWrite;
 
     /**
+     * Whether to print progress bar or not.
+     */
+    public boolean showProgress;
+
+    /**
      * Number of equi-distant vectors to be written to disk (makes sense only if
      * <code>cvFrite</code> is set to <code>true</code>.
      */

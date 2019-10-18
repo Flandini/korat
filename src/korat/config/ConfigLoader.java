@@ -20,6 +20,7 @@ import korat.testing.impl.TestCradle;
 import korat.utils.ReflectionUtils;
 import korat.utils.SerializationListener;
 import korat.utils.cv.WriteCVListener;
+import korat.utils.ProgressBarPrinter;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -81,6 +82,9 @@ public class ConfigLoader {
     
     public static final MyOption CV_WRITE = new MyOption( 
         "w", "cvWrite", "write explored candidate vectors to disk", false, false, "", "false");
+
+    public static final MyOption SHOW_PROGRESS = new MyOption(
+        "p", "showProgress", "print progress bar", false, false, "", "false");
     
     public static final MyOption CV_WRITE_NUM = new MyOption( 
         "W", "cvWriteNum", "write only num equi-distant vectors to disk", false, true, "num", "-1");
@@ -359,6 +363,11 @@ public class ConfigLoader {
     private void initStuffFromOptions() {
         TestCradle testCradle = TestCradle.getInstance();
         ConfigManager config = ConfigManager.getInstance();
+
+        if (config.showProgress) {
+          testCradle.attachSpecialClient(new ProgressBarPrinter(testCradle));
+        }
+
         if (config.cvWrite) {
             testCradle.attachSpecialClient(new WriteCVListener());
         }
