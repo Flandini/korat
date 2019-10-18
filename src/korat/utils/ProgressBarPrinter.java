@@ -1,6 +1,7 @@
 package korat.utils;
 
 import java.lang.Math;
+import java.util.ArrayList;
 
 import korat.testing.ITestCaseListener;
 import korat.testing.impl.TestCradle;
@@ -11,8 +12,8 @@ import korat.finitization.impl.StateSpace;
 import korat.finitization.impl.FieldDomain;
 
 public class ProgressBarPrinter implements ITestCaseListener {
-  long totalToExplore;
-  long explored;
+  private long totalToExplore;
+  private long explored;
 
   private TestCradle cradle;
   private long numFields;
@@ -37,15 +38,25 @@ public class ProgressBarPrinter implements ITestCaseListener {
     if (!started) {
       initPrinting();
     }
+
+    int[] currentCV = getCurrentCV();
+    int[] currentAccessed = getCurrentAccessedFields();
+
+    explored += calculateReachSpace(currentCV, currentAccessed);
+
+    printProgressBar();
+
+    prevCV = currentCV;
+    prevAccessed = currentAccessed;
   }
 
   public void notifyTestFinished(final long numOfExplored, final long numOfGenerated) {
+    System.out.println(); // Necessary to go to the next line after final progress bar
   }
 
   private void initPrinting() {
     totalToExplore = getTotalNumberOfChoices();
     System.out.println("Num choices: " + totalToExplore);
-
     started = true;
   }
 
@@ -74,29 +85,48 @@ public class ProgressBarPrinter implements ITestCaseListener {
     return numChoices;
   }
 
-  private void print() {
+  private long calculateReachSpace(final int[] cv, final int[] accessedFields) {
+    long choicesSkipped = 1;
+    ArrayList<Integer> accessed = new ArrayList<Integer>(accessedFields.length);
+
+    for (int field : accessedFields)
+      accessed.add(field);
+
+    for (int cvIdx : cv) {
+      if (!accessed.contains((Integer) cvIdx)) {
+        choicesSkipped *= cradle.getStateSpace().getFieldDomain(cvIdx).getNumberOfElements();
+      }
+    }
+
+    return choicesSkipped;
+  }
+
+  // Print related
+  private void printProgressBar() {
     final long progress = calculateProgress();
+    assert progress <= 100 : "NumLeft incorrect";
 
     System.out.print("\r");
     System.out.print("[");
     printTicks(progress);
-    printTicks(100 - progress);
+    printSpaces(100 - progress);
     System.out.print("]");
   }
 
   private void printSpaces(long numLeft) {
-    System.out.print(" ");
-    printSpaces(numLeft - 1);
+    for (int i = 0; i < numLeft; ++i) {
+      System.out.print(" ");
+    }
   }
 
   private void printTicks(long numLeft) {
-    System.out.print("=");
-    printTicks(numLeft - 1);
+    for (int i = 0; i < numLeft; ++i) {
+      System.out.print("=");
+    }
   }
 
   private long calculateProgress() {
-    double percentProgress = 100 * ((double) explored) / ((double) totalToExplore);
-    long numberTicks = (long) percentProgress;
-    return numberTicks;
+    double percentProgress = 100.0 * explored / totalToExplore;
+    return ((long) Math.floor(100 * percentProgress));
   }
 }

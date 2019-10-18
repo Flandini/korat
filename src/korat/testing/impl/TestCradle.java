@@ -274,6 +274,7 @@ public class TestCradle extends AbstractTestCaseGenerator implements ITester {
 
             if (predicateOK)
                 validCasesGenerated++;
+
             printStatus(stateSpaceExplorer, predicateOK);
             
             notifyClients(testCase);
