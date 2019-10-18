@@ -1,0 +1,74 @@
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [3])
+
+[0]korat.examples.binarytree.BinaryTree@5679c6c6.root -> class korat.examples.binarytree.BinaryTree$Node:4
+[1]korat.examples.binarytree.BinaryTree@5679c6c6.size -> int:1
+[2]korat.examples.binarytree.BinaryTree$Node@27ddd392.left -> class korat.examples.binarytree.BinaryTree$Node:4
+[3]korat.examples.binarytree.BinaryTree$Node@27ddd392.right -> class korat.examples.binarytree.BinaryTree$Node:4
+[4]korat.examples.binarytree.BinaryTree$Node@19e1023e.left -> class korat.examples.binarytree.BinaryTree$Node:4
+[5]korat.examples.binarytree.BinaryTree$Node@19e1023e.right -> class korat.examples.binarytree.BinaryTree$Node:4
+[6]korat.examples.binarytree.BinaryTree$Node@7cef4e59.left -> class korat.examples.binarytree.BinaryTree$Node:4
+[7]korat.examples.binarytree.BinaryTree$Node@7cef4e59.right -> class korat.examples.binarytree.BinaryTree$Node:4
+
+0 0 0 0 0 0 0 0  :: 0 1 
+1 0 0 0 0 0 0 0  :: 0 2 3 1 
+1 0 0 1 0 0 0 0  :: 0 2 3 
+1 0 0 2 0 0 0 0  :: 0 2 3 4 5 1 
+1 0 0 2 0 1 0 0  :: 0 2 3 4 5 
+1 0 0 2 0 2 0 0  :: 0 2 3 4 5 
+1 0 0 2 0 3 0 0  :: 0 2 3 4 5 6 7 1 ***
+1 0 0 2 0 3 0 1  :: 0 2 3 4 5 6 7 
+1 0 0 2 0 3 0 2  :: 0 2 3 4 5 6 7 
+1 0 0 2 0 3 0 3  :: 0 2 3 4 5 6 7 
+1 0 0 2 0 3 1 0  :: 0 2 3 4 5 6 
+1 0 0 2 0 3 2 0  :: 0 2 3 4 5 6 
+1 0 0 2 0 3 3 0  :: 0 2 3 4 5 6 
+1 0 0 2 1 0 0 0  :: 0 2 3 4 
+1 0 0 2 2 0 0 0  :: 0 2 3 4 
+1 0 0 2 3 0 0 0  :: 0 2 3 4 5 6 7 1 ***
+1 0 0 2 3 0 0 1  :: 0 2 3 4 5 6 7 
+1 0 0 2 3 0 0 2  :: 0 2 3 4 5 6 7 
+1 0 0 2 3 0 0 3  :: 0 2 3 4 5 6 7 
+1 0 0 2 3 0 1 0  :: 0 2 3 4 5 6 
+1 0 0 2 3 0 2 0  :: 0 2 3 4 5 6 
+1 0 0 2 3 0 3 0  :: 0 2 3 4 5 6 
+1 0 0 2 3 1 0 0  :: 0 2 3 4 5 
+1 0 0 2 3 2 0 0  :: 0 2 3 4 5 
+1 0 0 2 3 3 0 0  :: 0 2 3 4 5 
+1 0 1 0 0 0 0 0  :: 0 2 
+1 0 2 0 0 0 0 0  :: 0 2 3 4 5 1 
+1 0 2 0 0 1 0 0  :: 0 2 3 4 5 
+1 0 2 0 0 2 0 0  :: 0 2 3 4 5 
+1 0 2 0 0 3 0 0  :: 0 2 3 4 5 6 7 1 ***
+1 0 2 0 0 3 0 1  :: 0 2 3 4 5 6 7 
+1 0 2 0 0 3 0 2  :: 0 2 3 4 5 6 7 
+1 0 2 0 0 3 0 3  :: 0 2 3 4 5 6 7 
+1 0 2 0 0 3 1 0  :: 0 2 3 4 5 6 
+1 0 2 0 0 3 2 0  :: 0 2 3 4 5 6 
+1 0 2 0 0 3 3 0  :: 0 2 3 4 5 6 
+1 0 2 0 1 0 0 0  :: 0 2 3 4 
+1 0 2 0 2 0 0 0  :: 0 2 3 4 
+1 0 2 0 3 0 0 0  :: 0 2 3 4 5 6 7 1 ***
+1 0 2 0 3 0 0 1  :: 0 2 3 4 5 6 7 
+1 0 2 0 3 0 0 2  :: 0 2 3 4 5 6 7 
+1 0 2 0 3 0 0 3  :: 0 2 3 4 5 6 7 
+1 0 2 0 3 0 1 0  :: 0 2 3 4 5 6 
+1 0 2 0 3 0 2 0  :: 0 2 3 4 5 6 
+1 0 2 0 3 0 3 0  :: 0 2 3 4 5 6 
+1 0 2 0 3 1 0 0  :: 0 2 3 4 5 
+1 0 2 0 3 2 0 0  :: 0 2 3 4 5 
+1 0 2 0 3 3 0 0  :: 0 2 3 4 5 
+1 0 2 1 0 0 0 0  :: 0 2 3 
+1 0 2 2 0 0 0 0  :: 0 2 3 
+1 0 2 3 0 0 0 0  :: 0 2 3 4 5 6 7 1 ***
+1 0 2 3 0 0 0 1  :: 0 2 3 4 5 6 7 
+1 0 2 3 0 0 0 2  :: 0 2 3 4 5 6 7 
+1 0 2 3 0 0 0 3  :: 0 2 3 4 5 6 7 
+1 0 2 3 0 0 1 0  :: 0 2 3 4 5 6 
+1 0 2 3 0 0 2 0  :: 0 2 3 4 5 6 
+1 0 2 3 0 0 3 0  :: 0 2 3 4 5 6 
+1 0 2 3 0 1 0 0  :: 0 2 3 4 5 
+1 0 2 3 0 2 0 0  :: 0 2 3 4 5 
+1 0 2 3 0 3 0 0  :: 0 2 3 4 5 
+1 0 2 3 1 0 0 0  :: 0 2 3 4 
+1 0 2 3 2 0 0 0  :: 0 2 3 4 
+1 0 2 3 3 0 0 0  :: 0 2 3 4
