@@ -26,7 +26,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
   public ProgressBarPrinter() {
     this.started = false;
     this.totalToExplore = 0;
-    this.explored = 0;
+    this.explored = 1;
   }
 
   public ProgressBarPrinter(TestCradle cradle) {
@@ -85,6 +85,21 @@ public class ProgressBarPrinter implements ITestCaseListener {
     return numChoices;
   }
 
+  private long calculatePruneSpace(final int[] cv, final int[] accessedFields) {
+    int lastAccessed = accessedFields[accessedFields.length - 1];
+    long choicesSkipped = 0;
+
+    if (prevCV[lastAccessed] + 1 == cv[lastAccessed]) {
+      return 0;
+    }
+
+    // If reset
+    if (cv[lastAccessed] == 0) {
+    }
+
+    return 0;
+  }
+
   private long calculateReachSpace(final int[] cv, final int[] accessedFields) {
     long choicesSkipped = 1;
     ArrayList<Integer> accessed = new ArrayList<Integer>(accessedFields.length);
@@ -104,7 +119,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
   // Print related
   private void printProgressBar() {
     final long progress = calculateProgress();
-    assert progress <= 100 : "NumLeft incorrect";
+    assert (progress <= 100.0) : "NumLeft incorrect";
 
     System.out.print("\r");
     System.out.print("[");
@@ -127,6 +142,6 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
   private long calculateProgress() {
     double percentProgress = 100.0 * explored / totalToExplore;
-    return ((long) Math.floor(100 * percentProgress));
+    return ((long) Math.floor(percentProgress));
   }
 }
