@@ -42,8 +42,12 @@ public class ProgressBarPrinter implements ITestCaseListener {
     int[] currentCV = getCurrentCV();
     int[] currentAccessed = getCurrentAccessedFields();
 
+    long prevExplored = explored;
     explored += calculateReachSpace(currentCV, currentAccessed);
     explored += calculatePruneSpace(currentCV, currentAccessed);
+
+    assert explored <= totalToExplore : "explored states exceeded maximum number of states";
+    assert explored > prevExplored : "states covered overflowed";
 
     printProgressBar();
 
@@ -90,35 +94,36 @@ public class ProgressBarPrinter implements ITestCaseListener {
     if (prevAccessed == null || prevCV == null) {
       return 0;
     }
-    //int[] accessed = accessedFields.length >= prevAccessed.length ? accessedFields : prevAccessed;
+
     int[] accessed = prevAccessed;
 
     int lastAccessed = accessed[accessed.length - 1];
     long choicesSkipped = 0;
 
+    // accessedIdx is idx into list of field indices
+    // fieldIdx is the idx into the CV
+    // prevF and curF are indices into field domains
     for (int accessedIdx = accessed.length - 1; accessedIdx >= 0; --accessedIdx) {
-      if (cv[accessedIdx] - prevCV[accessedIdx] == 1)
+      int fieldIdx = accessed[accessedIdx];
+      int prevF = prevCV[fieldIdx];
+      int curF = cv[fieldIdx];
+
+      if (curF - prevF == 1)
         break;
 
-      if (cv[accessedIdx] == 0) {
-        printIntArray(prevCV);
-        printIntArray(cv);
-        long numFieldsSkipped = getNumFieldElements(accessedIdx) - prevCV[accessedIdx] - 1;
+      if (curF == 0) {
+        long skipped = getNumFieldElements(fieldIdx) - prevF - 1;
 
-        if (numFieldsSkipped > 0) {
-          System.out.println("Isomorphism break!");
-          int[] prefix = new int[accessedIdx];
-          System.arraycopy(accessed, 0, prefix, 0, accessedIdx);
+        if (skipped > 0) {
+
+          int[] prefix = new int[accessedIdx + 1];
+          System.arraycopy(accessed, 0, prefix, 0, accessedIdx + 1);
 
           long reached = calculateReachSpace(prevCV, prefix);
-          System.out.println("Reached: " + reached);
-          printIntArray(prevCV);
-          printIntArray(prefix);
-          choicesSkipped += (reached * numFieldsSkipped);
+          choicesSkipped += (reached * skipped);
         }
       }
     }
-    System.out.println("Skipped: " + choicesSkipped + " choices.");
 
     return choicesSkipped;
   }
@@ -148,8 +153,23 @@ public class ProgressBarPrinter implements ITestCaseListener {
     return false;
   }
 
-  // Print related
+  /*
+   * Printing related members and functions
+   */
+  static final int maxTurns = 4;
+  static final String[] turns = {"\\", "|", "/", "-"};
+  static final long cvsPerPrint = 10000;
+  int currentTurnNumber = 0;
+  int cvsSinceLastPrint = 0;
+
   private void printProgressBar() {
+    cvsSinceLastPrint++;
+    cvsSinceLastPrint %= cvsPerPrint;
+
+    if (cvsSinceLastPrint != 0) {
+      return;
+    }
+
     final long progress = calculateProgress();
     assert (progress <= 100.0) : "NumLeft incorrect";
 
@@ -158,6 +178,14 @@ public class ProgressBarPrinter implements ITestCaseListener {
     printTicks(progress);
     printSpaces(100 - progress);
     System.out.print("]");
+
+    System.out.print("    ");
+    System.out.print(explored + " / " + totalToExplore);
+    System.out.print("    ");
+
+    System.out.print(turns[currentTurnNumber++]);
+    currentTurnNumber = currentTurnNumber % maxTurns;
+    System.out.println();
   }
 
   private void printSpaces(long numLeft) {
