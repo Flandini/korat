@@ -1,6 +1,9 @@
 package korat.utils;
 
 import java.lang.Math;
+import java.lang.ArithmeticException;
+import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import korat.testing.ITestCaseListener;
@@ -12,8 +15,10 @@ import korat.finitization.impl.StateSpace;
 import korat.finitization.impl.FieldDomain;
 
 public class ProgressBarPrinter implements ITestCaseListener {
-  private long totalToExplore;
-  private long explored;
+  //private long totalToExplore;
+  //private long explored;
+  private BigInteger totalToExplore;
+  private BigInteger explored;
 
   private TestCradle cradle;
   private long numFields;
@@ -25,8 +30,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
   public ProgressBarPrinter() {
     this.started = false;
-    this.totalToExplore = 0;
-    this.explored = 1;
+    this.totalToExplore = BigInteger.ZERO;
+    this.explored = BigInteger.ONE;
   }
 
   public ProgressBarPrinter(TestCradle cradle) {
@@ -42,12 +47,10 @@ public class ProgressBarPrinter implements ITestCaseListener {
     int[] currentCV = getCurrentCV();
     int[] currentAccessed = getCurrentAccessedFields();
 
-    long prevExplored = explored;
-    explored += calculateReachSpace(currentCV, currentAccessed);
-    explored += calculatePruneSpace(currentCV, currentAccessed);
+    explored = explored.add(BigInteger.valueOf(calculateReachSpace(currentCV, currentAccessed)));
+    explored = explored.add(BigInteger.valueOf(calculatePruneSpace(currentCV, currentAccessed)));
 
-    assert explored <= totalToExplore : "explored states exceeded maximum number of states";
-    assert explored > prevExplored : "states covered overflowed";
+    assert explored.compareTo(totalToExplore) != 1 : "explored states exceeded maximum number of states";
 
     printProgressBar();
 
@@ -60,7 +63,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
   }
 
   private void initPrinting() {
-    totalToExplore = getTotalNumberOfChoices();
+    totalToExplore = BigInteger.valueOf(getTotalNumberOfChoices());
     System.out.println("Num choices: " + totalToExplore);
     started = true;
   }
@@ -81,9 +84,9 @@ public class ProgressBarPrinter implements ITestCaseListener {
       return -1;
     }
 
-    long numChoices = getNumFieldElements(0);
+    long numChoices = 1;
 
-    for (int i = 1; i < sizeCV; ++i) {
+    for (int i = 0; i < sizeCV; ++i) {
       numChoices *= getNumFieldElements(i);
     }
 
@@ -116,8 +119,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
         if (skipped > 0) {
 
-          int[] prefix = new int[accessedIdx + 1];
-          System.arraycopy(accessed, 0, prefix, 0, accessedIdx + 1);
+          int[] prefix = new int[accessedIdx];
+          System.arraycopy(accessed, 0, prefix, 0, accessedIdx);
 
           long reached = calculateReachSpace(prevCV, prefix);
           choicesSkipped += (reached * skipped);
@@ -134,9 +137,13 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
   private long calculateReachSpace(final int[] cv, final int[] accessedFields) {
     long choicesSkipped = 1;
+    ArrayList<Integer> accessed = new ArrayList<Integer>(accessedFields.length);
+
+    for (int i = 0; i < accessedFields.length; ++i)
+      accessed.add(accessedFields[i]);
 
     for (int i = 0; i < cv.length; ++i) {
-      if (!listContainsInt(accessedFields, i)) {
+      if (!accessed.contains((Integer) i)) {
         choicesSkipped *= getNumFieldElements(i);
       }
     }
@@ -144,21 +151,12 @@ public class ProgressBarPrinter implements ITestCaseListener {
     return choicesSkipped;
   }
 
-  private boolean listContainsInt(int[] list, int idx) {
-    for (int i = 0; i < list.length; ++i) {
-      if (list[i] == idx) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   /*
    * Printing related members and functions
    */
   static final int maxTurns = 4;
   static final String[] turns = {"\\", "|", "/", "-"};
-  static final long cvsPerPrint = 10000;
+  static final long cvsPerPrint = 1;
   int currentTurnNumber = 0;
   int cvsSinceLastPrint = 0;
 
@@ -171,7 +169,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
     }
 
     final long progress = calculateProgress();
-    assert (progress <= 100.0) : "NumLeft incorrect";
+    assert (progress <= 100.0) : "percent states covered > 100%";
+    //System.out.println("Progress: " + progress);
 
     System.out.print("\r");
     System.out.print("[");
@@ -185,7 +184,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
     System.out.print(turns[currentTurnNumber++]);
     currentTurnNumber = currentTurnNumber % maxTurns;
-    System.out.println();
+    //System.out.println();
   }
 
   private void printSpaces(long numLeft) {
@@ -201,8 +200,16 @@ public class ProgressBarPrinter implements ITestCaseListener {
   }
 
   private long calculateProgress() {
-    double percentProgress = 100.0 * explored / totalToExplore;
-    return ((long) Math.floor(percentProgress));
+    BigDecimal oneHundred = new BigDecimal(100);
+    BigDecimal percentProgress;
+
+    try {
+      percentProgress = oneHundred.multiply(new BigDecimal(explored)).divide(new BigDecimal(totalToExplore), 3, BigDecimal.ROUND_HALF_EVEN);
+    } catch (ArithmeticException ae) {
+      percentProgress = new BigDecimal(0);
+    }
+
+    return (percentProgress.longValue());
   }
 
   private void printIntArray(int[] cv) {
