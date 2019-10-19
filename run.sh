@@ -4,4 +4,4 @@
 
 #javac -cp .:build/:build/korat/testing/ ProgressBarPrinter.java
 ant build createJar && \
-java -noverify -cp .:./ProgressBarPrinter.class:lib/commons-cli-1.0.jar:lib/javassist.jar::dist/korat.jar korat.Korat --showProgress --class korat.examples.binarytree.BinaryTree --args 1
+java -noverify -cp .:./ProgressBarPrinter.class:lib/commons-cli-1.0.jar:lib/javassist.jar::dist/korat.jar korat.Korat --showProgress --class korat.examples.binarytree.BinaryTree --args 3
