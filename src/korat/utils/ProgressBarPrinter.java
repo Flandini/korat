@@ -15,8 +15,6 @@ import korat.finitization.impl.StateSpace;
 import korat.finitization.impl.FieldDomain;
 
 public class ProgressBarPrinter implements ITestCaseListener {
-  //private long totalToExplore;
-  //private long explored;
   private BigInteger totalToExplore;
   private BigInteger explored;
 
@@ -111,7 +109,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
       int prevF = prevCV[fieldIdx];
       int curF = cv[fieldIdx];
 
-      if (curF - prevF == 1)
+      if (curF == prevF + 1)
         break;
 
       if (curF == 0) {
@@ -131,10 +129,6 @@ public class ProgressBarPrinter implements ITestCaseListener {
     return choicesSkipped;
   }
 
-  private int getNumFieldElements(int idx) {
-    return cradle.getStateSpace().getFieldDomain(idx).getNumberOfElements();
-  }
-
   private long calculateReachSpace(final int[] cv, final int[] accessedFields) {
     long choicesSkipped = 1;
     ArrayList<Integer> accessed = new ArrayList<Integer>(accessedFields.length);
@@ -149,6 +143,10 @@ public class ProgressBarPrinter implements ITestCaseListener {
     }
 
     return choicesSkipped;
+  }
+
+  private int getNumFieldElements(int idx) {
+    return cradle.getStateSpace().getFieldDomain(idx).getNumberOfElements();
   }
 
   /*
@@ -170,7 +168,6 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
     final long progress = calculateProgress();
     assert (progress <= 100.0) : "percent states covered > 100%";
-    //System.out.println("Progress: " + progress);
 
     System.out.print("\r");
     System.out.print("[");
@@ -184,7 +181,6 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
     System.out.print(turns[currentTurnNumber++]);
     currentTurnNumber = currentTurnNumber % maxTurns;
-    //System.out.println();
   }
 
   private void printSpaces(long numLeft) {
@@ -204,11 +200,12 @@ public class ProgressBarPrinter implements ITestCaseListener {
     BigDecimal percentProgress;
 
     try {
-      percentProgress = oneHundred.multiply(new BigDecimal(explored)).divide(new BigDecimal(totalToExplore), 3, BigDecimal.ROUND_HALF_EVEN);
+      percentProgress = oneHundred.multiply((new BigDecimal(explored)).divide(new BigDecimal(totalToExplore), 3, BigDecimal.ROUND_HALF_EVEN));
     } catch (ArithmeticException ae) {
       percentProgress = new BigDecimal(0);
     }
 
+    assert percentProgress.longValue() <= 100 : "Percent > 100%";
     return (percentProgress.longValue());
   }
 
