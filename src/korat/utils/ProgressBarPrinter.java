@@ -14,9 +14,14 @@ import korat.utils.IIntList;
 import korat.finitization.impl.StateSpace;
 import korat.finitization.impl.FieldDomain;
 
+//**************************************************************************************
+// Quantifying the Exploration of the Korat Solver for Imperative Constraints
+// Alyas Almaawi, Hayes Converse, Milos Gligoric, Sasa Misailovic, and Sarfraz Khurshid
+// http://misailo.web.engr.illinois.edu/papers/jpf19-koratcount.pdf
+//**************************************************************************************
 public class ProgressBarPrinter implements ITestCaseListener {
-  private BigInteger totalToExplore;
-  private BigInteger explored;
+  private BigInteger explored, totalToExplore;
+  private BigInteger pruned, reached;
 
   private TestCradle cradle;
   private long numFields;
@@ -30,6 +35,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
     this.started = false;
     this.totalToExplore = BigInteger.ZERO;
     this.explored = BigInteger.ONE;
+    this.pruned = BigInteger.ZERO;
+    this.reached = BigInteger.ZERO;
   }
 
   public ProgressBarPrinter(TestCradle cradle) {
@@ -37,6 +44,11 @@ public class ProgressBarPrinter implements ITestCaseListener {
     this.cradle = cradle;
   }
 
+  //**************************************************************************************
+  //
+  // Listener interface
+  //
+  //**************************************************************************************
   public void notifyNewTestCase(final Object testCase) {
     if (!started) {
       initPrinting();
@@ -45,24 +57,38 @@ public class ProgressBarPrinter implements ITestCaseListener {
     int[] currentCV = getCurrentCV();
     int[] currentAccessed = getCurrentAccessedFields();
 
-    explored = explored.add(BigInteger.valueOf(calculateReachSpace(currentCV, currentAccessed)));
-    explored = explored.add(BigInteger.valueOf(calculatePruneSpace(currentCV, currentAccessed)));
+    BigInteger curReached = BigInteger.valueOf(calculateReachSpace(currentCV, currentAccessed));
+    BigInteger curPruned = BigInteger.valueOf(calculatePruneSpace(currentCV, currentAccessed));
+
+    this.pruned = this.pruned.add(curPruned);
+    this.reached = this.reached.add(curReached);
+
+    this.explored = this.explored.add(curReached);
+    this.explored = this.explored.add(curPruned);
 
     assert explored.compareTo(totalToExplore) != 1 : "explored states exceeded maximum number of states";
 
-    printProgressBar();
+    printProgress();
 
     prevCV = currentCV;
     prevAccessed = currentAccessed;
   }
 
   public void notifyTestFinished(final long numOfExplored, final long numOfGenerated) {
+    this.pruned = this.pruned.add(totalToExplore.subtract(explored));
+    this.explored = this.totalToExplore;
+
+    printProgress();
     System.out.println(); // Necessary to go to the next line after final progress bar
   }
 
+  //**************************************************************************************
+  //
+  // Helper methods for fields accessed, candidate vectors, intialization, etc.
+  //
+  //**************************************************************************************
   private void initPrinting() {
     totalToExplore = BigInteger.valueOf(getTotalNumberOfChoices());
-    System.out.println("Num choices: " + totalToExplore);
     started = true;
   }
 
@@ -72,6 +98,10 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
   private int[] getCurrentCV() {
     return cradle.getCandidateVector();
+  }
+
+  private int getNumFieldElements(int idx) {
+    return cradle.getStateSpace().getFieldDomain(idx).getNumberOfElements();
   }
 
   private long getTotalNumberOfChoices() {
@@ -91,6 +121,11 @@ public class ProgressBarPrinter implements ITestCaseListener {
     return numChoices;
   }
 
+  //**************************************************************************************
+  //
+  // PruneSpace and ReachSpace calculations
+  //
+  //**************************************************************************************
   private long calculatePruneSpace(final int[] cv, final int[] accessedFields) {
     if (prevAccessed == null || prevCV == null) {
       return 0;
@@ -109,16 +144,16 @@ public class ProgressBarPrinter implements ITestCaseListener {
       int prevF = prevCV[fieldIdx];
       int curF = cv[fieldIdx];
 
-      if (curF == prevF + 1)
+      if (curF - prevF == 1) {
         break;
+      }
 
       if (curF == 0) {
         long skipped = getNumFieldElements(fieldIdx) - prevF - 1;
 
         if (skipped > 0) {
-
-          int[] prefix = new int[accessedIdx];
-          System.arraycopy(accessed, 0, prefix, 0, accessedIdx);
+          int[] prefix = new int[accessedIdx + 1];
+          System.arraycopy(accessed, 0, prefix, 0, accessedIdx + 1);
 
           long reached = calculateReachSpace(prevCV, prefix);
           choicesSkipped += (reached * skipped);
@@ -145,42 +180,85 @@ public class ProgressBarPrinter implements ITestCaseListener {
     return choicesSkipped;
   }
 
-  private int getNumFieldElements(int idx) {
-    return cradle.getStateSpace().getFieldDomain(idx).getNumberOfElements();
-  }
-
-  /*
-   * Printing related members and functions
-   */
+  //**************************************************************************************
+  //
+  // Printing related members and functions
+  //
+  //**************************************************************************************
   static final int maxTurns = 4;
   static final String[] turns = {"\\", "|", "/", "-"};
-  static final long cvsPerPrint = 1;
+  long numCvPerPrint = 1;
   int currentTurnNumber = 0;
-  int cvsSinceLastPrint = 0;
+  int numCvSinceLastPrint = 0;
 
-  private void printProgressBar() {
-    cvsSinceLastPrint++;
-    cvsSinceLastPrint %= cvsPerPrint;
+  private void printProgress() {
+    numCvSinceLastPrint++;
+    numCvSinceLastPrint %= numCvPerPrint;
 
-    if (cvsSinceLastPrint != 0) {
+    if (numCvSinceLastPrint != 0) {
       return;
     }
 
     final long progress = calculateProgress();
-    assert (progress <= 100.0) : "percent states covered > 100%";
 
     System.out.print("\r");
+    printPercentCovered(progress);
+    printProgressBar(progress); printStatistics();
+    printTurnstile();
+
+    adjustCVPerPrint();
+  }
+
+  private void printPercentCovered(final long percentProgress) {
+    System.out.print(" ");
+    printPercentage(percentProgress);
+    System.out.print("  ");
+
+  }
+
+  private void printProgressBar(final long percentProgress) {
     System.out.print("[");
-    printTicks(progress);
-    printSpaces(100 - progress);
-    System.out.print("]");
+    printTicks(percentProgress);
+    printSpaces(100 - percentProgress);
+    System.out.print("]    ");
 
-    System.out.print("    ");
-    System.out.print(explored + " / " + totalToExplore);
-    System.out.print("    ");
+    System.out.print(explored + " / " + totalToExplore + " ");
+  }
 
+  private void printStatistics() {
+    long percentPruned = roundedFraction(pruned, explored);
+    long percentReached = roundedFraction(reached, explored);
+
+    System.out.print("   ");
+
+    System.out.print("Percent reached:");
+    printPercentage(percentReached);
+
+    System.out.print(" / ");
+
+    System.out.print("Percent pruned:");
+    printPercentage(percentPruned);
+  }
+
+  private void printTurnstile() {
+    System.out.print("  ");
     System.out.print(turns[currentTurnNumber++]);
     currentTurnNumber = currentTurnNumber % maxTurns;
+    System.out.print("  ");
+  }
+
+  private void printPercentage(final long percentage) {
+    // Need to place hold space for the 100s place
+    if (percentage < 100.0) {
+      System.out.print(" ");
+    }
+
+    // Need to place hold space for the 10s place
+    if (percentage < 10.0) {
+      System.out.print(" ");
+    }
+
+    System.out.print(percentage + "%");
   }
 
   private void printSpaces(long numLeft) {
@@ -195,20 +273,42 @@ public class ProgressBarPrinter implements ITestCaseListener {
     }
   }
 
+  // Round to first decimal place. Couldn't find a Math.* func for this
+  private float roundFloat(final float in) {
+    return (float) (Math.round(in * 10) / 10.0);
+  }
+
+  private void adjustCVPerPrint() {
+    if (numCvPerPrint < 1000000000) {
+      numCvPerPrint *= numCvPerPrint;
+    } else {
+      numCvPerPrint = 1000000000;
+    }
+  }
+
   private long calculateProgress() {
+    return roundedFraction(explored, totalToExplore);
+  }
+
+  private long roundedFraction(final BigInteger part, final BigInteger whole) {
     BigDecimal oneHundred = new BigDecimal(100);
     BigDecimal percentProgress;
 
-    try {
-      percentProgress = oneHundred.multiply((new BigDecimal(explored)).divide(new BigDecimal(totalToExplore), 3, BigDecimal.ROUND_HALF_EVEN));
-    } catch (ArithmeticException ae) {
-      percentProgress = new BigDecimal(0);
+    percentProgress = oneHundred.multiply((new BigDecimal(part)).divide(new BigDecimal(whole), 3, BigDecimal.ROUND_HALF_EVEN));
+
+    if (percentProgress.compareTo(oneHundred) == 1) {
+      throw new RuntimeException("Percent progress > 100");
     }
 
-    assert percentProgress.longValue() <= 100 : "Percent > 100%";
-    return (percentProgress.longValue());
+    return percentProgress.longValue();
   }
 
+
+  //**************************************************************************************
+  //
+  // For debugging only
+  //
+  //**************************************************************************************
   private void printIntArray(int[] cv) {
     for (int i = 0; i < cv.length; ++i) {
       System.out.print(cv[i]);
