@@ -22,6 +22,7 @@ import korat.finitization.impl.FieldDomain;
 public class ProgressBarPrinter implements ITestCaseListener {
   private BigInteger explored, totalToExplore;
   private BigInteger pruned, reached;
+  private BigInteger numCV;
 
   private TestCradle cradle;
   private long numFields;
@@ -37,6 +38,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
     this.explored = BigInteger.ONE;
     this.pruned = BigInteger.ZERO;
     this.reached = BigInteger.ZERO;
+    this.numCV = BigInteger.ZERO;
   }
 
   public ProgressBarPrinter(TestCradle cradle) {
@@ -54,6 +56,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
       initPrinting();
     }
 
+    this.numCV = this.numCV.add(BigInteger.ONE);
+
     int[] currentCV = getCurrentCV();
     int[] currentAccessed = getCurrentAccessedFields();
 
@@ -66,7 +70,27 @@ public class ProgressBarPrinter implements ITestCaseListener {
     this.explored = this.explored.add(curReached);
     this.explored = this.explored.add(curPruned);
 
-    assert explored.compareTo(totalToExplore) != 1 : "explored states exceeded maximum number of states";
+    if (explored.compareTo(totalToExplore) == 1) {
+      System.out.println("Explored: " + explored);
+      System.out.println("TotalToExplore: " + totalToExplore);
+      System.out.println("Reached: " + reached);
+      System.out.println("Pruned: " + pruned);
+      System.out.println();
+
+      System.out.println("curReached: " + curReached);
+      System.out.println("curPruned: " + curPruned);
+      System.out.println("Current CV: ");
+      printIntArray(currentCV);
+      System.out.println("Current field accesses: " );
+      printIntArray(currentAccessed);
+
+      System.out.println("Previous CV: ");
+      printIntArray(prevCV);
+      System.out.println("Previous field accesses: " );
+      printIntArray(prevAccessed);
+
+      throw new RuntimeException("explored states exceeded maximum number of states");
+    }
 
     printProgress();
 
@@ -88,7 +112,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
   //
   //**************************************************************************************
   private void initPrinting() {
-    totalToExplore = BigInteger.valueOf(getTotalNumberOfChoices());
+    totalToExplore = getTotalNumberOfChoices();
     started = true;
   }
 
@@ -104,18 +128,18 @@ public class ProgressBarPrinter implements ITestCaseListener {
     return cradle.getStateSpace().getFieldDomain(idx).getNumberOfElements();
   }
 
-  private long getTotalNumberOfChoices() {
+  private BigInteger getTotalNumberOfChoices() {
     StateSpace space = cradle.getStateSpace();
     int sizeCV = space.getStructureList().length;
 
     if (sizeCV == 0) {
-      return -1;
+      throw new RuntimeException("CV's have zero length, can't print progress bar");
     }
 
-    long numChoices = 1;
+    BigInteger numChoices = BigInteger.ONE;
 
-    for (int i = 0; i < sizeCV; ++i) {
-      numChoices *= getNumFieldElements(i);
+    for (int i = 0; i < sizeCV; i++) {
+      numChoices = numChoices.multiply(BigInteger.valueOf(getNumFieldElements(i)));
     }
 
     return numChoices;
@@ -188,8 +212,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
   static final int maxTurns = 4;
   static final String[] turns = {"\\", "|", "/", "-"};
   long numCvPerPrint = 1;
+  long numCvSinceLastPrint = 0;
   int currentTurnNumber = 0;
-  int numCvSinceLastPrint = 0;
 
   private void printProgress() {
     numCvSinceLastPrint++;
@@ -205,8 +229,6 @@ public class ProgressBarPrinter implements ITestCaseListener {
     printPercentCovered(progress);
     printProgressBar(progress); printStatistics();
     printTurnstile();
-
-    adjustCVPerPrint();
   }
 
   private void printPercentCovered(final long percentProgress) {
@@ -278,13 +300,12 @@ public class ProgressBarPrinter implements ITestCaseListener {
     return (float) (Math.round(in * 10) / 10.0);
   }
 
-  private void adjustCVPerPrint() {
-    if (numCvPerPrint < 1000000000) {
-      numCvPerPrint *= numCvPerPrint;
-    } else {
-      numCvPerPrint = 1000000000;
-    }
-  }
+  //private void adjustCVPerPrint() {
+     //if (numCV > numCvPerPrint)
+    //if (numCV.compareTo(numCvPerPrint) == 1) {
+      //numCvPerPrint = numCvPerPrint.multiply(BigInteger.TEN);
+    //}
+  //}
 
   private long calculateProgress() {
     return roundedFraction(explored, totalToExplore);
@@ -296,13 +317,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
     percentProgress = oneHundred.multiply((new BigDecimal(part)).divide(new BigDecimal(whole), 3, BigDecimal.ROUND_HALF_EVEN));
 
-    if (percentProgress.compareTo(oneHundred) == 1) {
-      throw new RuntimeException("Percent progress > 100");
-    }
-
     return percentProgress.longValue();
   }
-
 
   //**************************************************************************************
   //
