@@ -61,36 +61,14 @@ public class ProgressBarPrinter implements ITestCaseListener {
     int[] currentCV = getCurrentCV();
     int[] currentAccessed = getCurrentAccessedFields();
 
-    BigInteger curReached = BigInteger.valueOf(calculateReachSpace(currentCV, currentAccessed));
-    BigInteger curPruned = BigInteger.valueOf(calculatePruneSpace(currentCV, currentAccessed));
+    BigInteger curReached = calculateReachSpace(currentCV, currentAccessed);
+    BigInteger curPruned = calculatePruneSpace(currentCV, currentAccessed);
 
     this.pruned = this.pruned.add(curPruned);
     this.reached = this.reached.add(curReached);
 
     this.explored = this.explored.add(curReached);
     this.explored = this.explored.add(curPruned);
-
-    if (explored.compareTo(totalToExplore) == 1) {
-      System.out.println("Explored: " + explored);
-      System.out.println("TotalToExplore: " + totalToExplore);
-      System.out.println("Reached: " + reached);
-      System.out.println("Pruned: " + pruned);
-      System.out.println();
-
-      System.out.println("curReached: " + curReached);
-      System.out.println("curPruned: " + curPruned);
-      System.out.println("Current CV: ");
-      printIntArray(currentCV);
-      System.out.println("Current field accesses: " );
-      printIntArray(currentAccessed);
-
-      System.out.println("Previous CV: ");
-      printIntArray(prevCV);
-      System.out.println("Previous field accesses: " );
-      printIntArray(prevAccessed);
-
-      throw new RuntimeException("explored states exceeded maximum number of states");
-    }
 
     printProgress();
 
@@ -150,15 +128,16 @@ public class ProgressBarPrinter implements ITestCaseListener {
   // PruneSpace and ReachSpace calculations
   //
   //**************************************************************************************
-  private long calculatePruneSpace(final int[] cv, final int[] accessedFields) {
+  private BigInteger calculatePruneSpace(final int[] cv, final int[] accessedFields) {
+    BigInteger choicesSkipped = BigInteger.ZERO;
+
     if (prevAccessed == null || prevCV == null) {
-      return 0;
+      return choicesSkipped;
     }
 
     int[] accessed = prevAccessed;
 
     int lastAccessed = accessed[accessed.length - 1];
-    long choicesSkipped = 0;
 
     // accessedIdx is idx into list of field indices
     // fieldIdx is the idx into the CV
@@ -179,8 +158,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
           int[] prefix = new int[accessedIdx + 1];
           System.arraycopy(accessed, 0, prefix, 0, accessedIdx + 1);
 
-          long reached = calculateReachSpace(prevCV, prefix);
-          choicesSkipped += (reached * skipped);
+          BigInteger reached = calculateReachSpace(prevCV, prefix);
+          choicesSkipped = choicesSkipped.add(reached.multiply(BigInteger.valueOf(skipped)));
         }
       }
     }
@@ -188,8 +167,9 @@ public class ProgressBarPrinter implements ITestCaseListener {
     return choicesSkipped;
   }
 
-  private long calculateReachSpace(final int[] cv, final int[] accessedFields) {
-    long choicesSkipped = 1;
+  private BigInteger calculateReachSpace(final int[] cv, final int[] accessedFields) {
+    BigInteger choicesSkipped = BigInteger.ONE;
+
     ArrayList<Integer> accessed = new ArrayList<Integer>(accessedFields.length);
 
     for (int i = 0; i < accessedFields.length; ++i)
@@ -197,7 +177,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
     for (int i = 0; i < cv.length; ++i) {
       if (!accessed.contains((Integer) i)) {
-        choicesSkipped *= getNumFieldElements(i);
+        choicesSkipped = choicesSkipped.multiply(BigInteger.valueOf(getNumFieldElements(i)));
       }
     }
 
@@ -227,7 +207,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
     System.out.print("\r");
     printPercentCovered(progress);
-    printProgressBar(progress); printStatistics();
+    printProgressBar(progress);
+    printStatistics();
     printTurnstile();
   }
 
@@ -299,13 +280,6 @@ public class ProgressBarPrinter implements ITestCaseListener {
   private float roundFloat(final float in) {
     return (float) (Math.round(in * 10) / 10.0);
   }
-
-  //private void adjustCVPerPrint() {
-     //if (numCV > numCvPerPrint)
-    //if (numCV.compareTo(numCvPerPrint) == 1) {
-      //numCvPerPrint = numCvPerPrint.multiply(BigInteger.TEN);
-    //}
-  //}
 
   private long calculateProgress() {
     return roundedFraction(explored, totalToExplore);
