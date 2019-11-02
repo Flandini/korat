@@ -4,7 +4,11 @@ import java.lang.Math;
 import java.lang.ArithmeticException;
 import java.math.BigInteger;
 import java.math.BigDecimal;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 import korat.testing.ITestCaseListener;
 import korat.testing.impl.TestCradle;
@@ -20,8 +24,77 @@ import korat.finitization.impl.FieldDomain;
 // http://misailo.web.engr.illinois.edu/papers/jpf19-koratcount.pdf
 //**************************************************************************************
 public class ProgressBarPrinter implements ITestCaseListener {
+
+  protected abstract class LazyBig {
+    protected List<BigInteger> sums;
+    String previousStringRepr = "";
+
+    public LazyBig() {
+      sums = new LinkedList<BigInteger>();
+    }
+
+    protected abstract Object sumAll();
+
+    public String toString() {
+      if (sums.size() >= 100) {
+        Object result = sumAll();
+        previousStringRepr = result.toString();
+      }
+
+      return previousStringRepr;
+    }
+  }
+
+  class LazyBigInteger extends LazyBig {
+    public LazyBigInteger() {
+      super();
+    }
+
+    public LazyBigInteger(BigInteger start) {
+      super();
+      sums.add(start);
+    }
+
+    public LazyBigInteger add(BigInteger bigInt) {
+      sums.add(bigInt);
+      return this;
+    }
+
+    protected Object sumAll() {
+      BigInteger result = BigInteger.ZERO;
+
+      ListIterator<BigInteger> iter = sums.listIterator(0);
+
+      while (iter.hasNext()) {
+        result = result.add(iter.next());
+      }
+
+      return result;
+    }
+
+    public BigInteger toBigInt() {
+      return ((BigInteger) sumAll());
+    }
+  }
+
+  //class LazyBigDecimal extends LazyBig {
+    //public LazyBigDecimal(BigDecimal start) {
+      //super();
+      //sums.add(start);
+    //}
+
+    //public LazyBigDecimal add(BigDecimal bigDecimal) {
+      //sums.add(bigDecimal);
+      //return this;
+    //}
+
+    //protected Object sumAll() {
+      //return null;
+    //}
+  //}
+
   private BigInteger explored, totalToExplore;
-  private BigInteger pruned, reached;
+  private LazyBigInteger pruned, reached;
   private BigInteger numCV;
 
   private TestCradle cradle;
@@ -36,8 +109,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
     this.started = false;
     this.totalToExplore = BigInteger.ZERO;
     this.explored = BigInteger.ONE;
-    this.pruned = BigInteger.ZERO;
-    this.reached = BigInteger.ZERO;
+    this.pruned = new LazyBigInteger();
+    this.reached = new LazyBigInteger();
     this.numCV = BigInteger.ZERO;
   }
 
@@ -64,20 +137,23 @@ public class ProgressBarPrinter implements ITestCaseListener {
     BigInteger curReached = calculateReachSpace(currentCV, currentAccessed);
     BigInteger curPruned = calculatePruneSpace(currentCV, currentAccessed);
 
-    this.pruned = this.pruned.add(curPruned);
-    this.reached = this.reached.add(curReached);
+    //this.pruned = this.pruned.add(curPruned);
+    //this.reached = this.reached.add(curReached);
+    pruned.add(curPruned);
+    reached.add(curReached);
 
     this.explored = this.explored.add(curReached);
     this.explored = this.explored.add(curPruned);
 
-    printProgress();
+    //printProgress();
 
     prevCV = currentCV;
     prevAccessed = currentAccessed;
   }
 
   public void notifyTestFinished(final long numOfExplored, final long numOfGenerated) {
-    this.pruned = this.pruned.add(totalToExplore.subtract(explored));
+    //this.pruned = this.pruned.add(totalToExplore.subtract(explored));
+    pruned.add(totalToExplore.subtract(explored));
     this.explored = this.totalToExplore;
 
     printProgress();
@@ -229,8 +305,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
   }
 
   private void printStatistics() {
-    long percentPruned = roundedFraction(pruned, explored);
-    long percentReached = roundedFraction(reached, explored);
+    long percentPruned = roundedFraction(pruned.toBigInt(), explored);
+    long percentReached = roundedFraction(reached.toBigInt(), explored);
 
     System.out.print("   ");
 
