@@ -25,61 +25,6 @@ import korat.finitization.impl.FieldDomain;
 //**************************************************************************************
 public class ProgressBarPrinter implements ITestCaseListener {
 
-  class LazyBigInteger {
-    protected List<BigInteger> sums;
-
-    BigInteger currentValue;
-    String previousStringRepr = "";
-
-    private final static int threshold = 1000;
-
-    public LazyBigInteger() {
-      sums = new LinkedList<BigInteger>();
-    }
-
-    public LazyBigInteger(BigInteger start) {
-      this();
-      sums.add(start);
-    }
-
-    public LazyBigInteger add(BigInteger bigInt) {
-      sums.add(bigInt);
-
-      if (sums.size() >= threshold) {
-        currentValue = sumAll();
-        sums.clear();
-        sums.add(currentValue);
-      }
-
-      return this;
-    }
-
-    public BigInteger setValue(BigInteger other) {
-      sums.clear();
-      sums.add(other);
-      return sumAll();
-    }
-
-    protected BigInteger sumAll() {
-      BigInteger result = BigInteger.ZERO;
-
-      ListIterator<BigInteger> iter = sums.listIterator(0);
-
-      while (iter.hasNext()) {
-        result = result.add(iter.next());
-      }
-
-      return result;
-    }
-
-    public BigInteger toBigInt() {
-      return ((BigInteger) sumAll());
-    }
-
-    public String toString() {
-      return (toBigInt().toString());
-    }
-  }
 
   private BigInteger totalToExplore;
   private LazyBigInteger pruned, reached, explored;
@@ -365,5 +310,67 @@ public class ProgressBarPrinter implements ITestCaseListener {
       System.out.print(cv[i]);
     }
     System.out.println();
+  }
+
+
+  //**************************************************************************************
+  //
+  // Lazy BigInteger evaluation class
+  //
+  //**************************************************************************************
+  class LazyBigInteger {
+    protected List<BigInteger> sums;
+
+    BigInteger currentValue;
+    String previousStringRepr = "";
+
+    private final static int threshold = 1000;
+
+    public LazyBigInteger() {
+      sums = new LinkedList<BigInteger>();
+    }
+
+    public LazyBigInteger(BigInteger start) {
+      this();
+      sums.add(start);
+    }
+
+    public LazyBigInteger add(BigInteger bigInt) {
+      sums.add(bigInt);
+
+      if (sums.size() >= threshold) {
+        currentValue = sumAll();
+        sums.clear();
+        sums.add(currentValue);
+      }
+
+      return this;
+    }
+
+    public BigInteger setValue(BigInteger other) {
+      sums.clear();
+      sums.add(other);
+      return sumAll();
+    }
+
+    protected BigInteger sumAll() {
+      BigInteger result = BigInteger.ZERO;
+
+      ListIterator<BigInteger> iter = sums.listIterator(0);
+
+      while (iter.hasNext()) {
+        result = result.add(iter.next());
+      }
+
+      return result;
+    }
+
+    public BigInteger toBigInt() {
+      return ((BigInteger) sumAll());
+    }
+
+    public String toString() {
+      return (toBigInt().toString());
+    }
   }
 }
