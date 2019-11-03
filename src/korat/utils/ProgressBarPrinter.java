@@ -25,42 +25,42 @@ import korat.finitization.impl.FieldDomain;
 //**************************************************************************************
 public class ProgressBarPrinter implements ITestCaseListener {
 
-  protected abstract class LazyBig {
+  class LazyBigInteger {
     protected List<BigInteger> sums;
+
+    BigInteger currentValue;
     String previousStringRepr = "";
 
-    public LazyBig() {
+    private final static int threshold = 1000;
+
+    public LazyBigInteger() {
       sums = new LinkedList<BigInteger>();
     }
 
-    protected abstract Object sumAll();
-
-    public String toString() {
-      if (sums.size() >= 100) {
-        Object result = sumAll();
-        previousStringRepr = result.toString();
-      }
-
-      return previousStringRepr;
-    }
-  }
-
-  class LazyBigInteger extends LazyBig {
-    public LazyBigInteger() {
-      super();
-    }
-
     public LazyBigInteger(BigInteger start) {
-      super();
+      this();
       sums.add(start);
     }
 
     public LazyBigInteger add(BigInteger bigInt) {
       sums.add(bigInt);
+
+      if (sums.size() >= threshold) {
+        currentValue = sumAll();
+        sums.clear();
+        sums.add(currentValue);
+      }
+
       return this;
     }
 
-    protected Object sumAll() {
+    public BigInteger setValue(BigInteger other) {
+      sums.clear();
+      sums.add(other);
+      return sumAll();
+    }
+
+    protected BigInteger sumAll() {
       BigInteger result = BigInteger.ZERO;
 
       ListIterator<BigInteger> iter = sums.listIterator(0);
@@ -75,26 +75,14 @@ public class ProgressBarPrinter implements ITestCaseListener {
     public BigInteger toBigInt() {
       return ((BigInteger) sumAll());
     }
+
+    public String toString() {
+      return (toBigInt().toString());
+    }
   }
 
-  //class LazyBigDecimal extends LazyBig {
-    //public LazyBigDecimal(BigDecimal start) {
-      //super();
-      //sums.add(start);
-    //}
-
-    //public LazyBigDecimal add(BigDecimal bigDecimal) {
-      //sums.add(bigDecimal);
-      //return this;
-    //}
-
-    //protected Object sumAll() {
-      //return null;
-    //}
-  //}
-
-  private BigInteger explored, totalToExplore;
-  private LazyBigInteger pruned, reached;
+  private BigInteger totalToExplore;
+  private LazyBigInteger pruned, reached, explored;
   private BigInteger numCV;
 
   private TestCradle cradle;
@@ -108,7 +96,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
   public ProgressBarPrinter() {
     this.started = false;
     this.totalToExplore = BigInteger.ZERO;
-    this.explored = BigInteger.ONE;
+    this.explored = new LazyBigInteger(BigInteger.ONE);
     this.pruned = new LazyBigInteger();
     this.reached = new LazyBigInteger();
     this.numCV = BigInteger.ZERO;
@@ -137,13 +125,11 @@ public class ProgressBarPrinter implements ITestCaseListener {
     BigInteger curReached = calculateReachSpace(currentCV, currentAccessed);
     BigInteger curPruned = calculatePruneSpace(currentCV, currentAccessed);
 
-    //this.pruned = this.pruned.add(curPruned);
-    //this.reached = this.reached.add(curReached);
     pruned.add(curPruned);
     reached.add(curReached);
 
-    this.explored = this.explored.add(curReached);
-    this.explored = this.explored.add(curPruned);
+    explored.add(curReached);
+    explored.add(curPruned);
 
     //printProgress();
 
@@ -152,9 +138,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
   }
 
   public void notifyTestFinished(final long numOfExplored, final long numOfGenerated) {
-    //this.pruned = this.pruned.add(totalToExplore.subtract(explored));
-    pruned.add(totalToExplore.subtract(explored));
-    this.explored = this.totalToExplore;
+    pruned.add(totalToExplore.subtract(explored.toBigInt()));
+    explored.setValue(this.totalToExplore);
 
     printProgress();
     System.out.println(); // Necessary to go to the next line after final progress bar
@@ -305,8 +290,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
   }
 
   private void printStatistics() {
-    long percentPruned = roundedFraction(pruned.toBigInt(), explored);
-    long percentReached = roundedFraction(reached.toBigInt(), explored);
+    long percentPruned = roundedFraction(pruned.toBigInt(), explored.toBigInt());
+    long percentReached = roundedFraction(reached.toBigInt(), explored.toBigInt());
 
     System.out.print("   ");
 
@@ -358,7 +343,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
   }
 
   private long calculateProgress() {
-    return roundedFraction(explored, totalToExplore);
+    return roundedFraction(explored.toBigInt(), totalToExplore);
   }
 
   private long roundedFraction(final BigInteger part, final BigInteger whole) {
