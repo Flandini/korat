@@ -1,7 +1,6 @@
 package korat.utils;
 
 import java.lang.Math;
-import java.lang.ArithmeticException;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 
@@ -13,10 +12,7 @@ import java.util.ListIterator;
 import korat.testing.ITestCaseListener;
 import korat.testing.impl.TestCradle;
 
-import korat.utils.IIntList;
-
 import korat.finitization.impl.StateSpace;
-import korat.finitization.impl.FieldDomain;
 
 //**************************************************************************************
 // Quantifying the Exploration of the Korat Solver for Imperative Constraints
@@ -25,15 +21,16 @@ import korat.finitization.impl.FieldDomain;
 //**************************************************************************************
 public class ProgressBarPrinter implements ITestCaseListener {
 
-
   private BigInteger totalToExplore;
+
   private LazyBigInteger pruned, reached, explored;
+
   private BigInteger numCV;
 
   private TestCradle cradle;
-  private long numFields;
 
   private int[] prevCV;
+
   private int[] prevAccessed;
 
   private boolean started;
@@ -76,7 +73,7 @@ public class ProgressBarPrinter implements ITestCaseListener {
     explored.add(curReached);
     explored.add(curPruned);
 
-    //printProgress();
+    printProgress();
 
     prevCV = currentCV;
     prevAccessed = currentAccessed;
@@ -110,6 +107,23 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
   private int getNumFieldElements(int idx) {
     return cradle.getStateSpace().getFieldDomain(idx).getNumberOfElements();
+  }
+
+  //**************************************************************************************
+  //
+  // Predictive model counting addons
+  //
+  //**************************************************************************************
+  private long getValidCases() {
+    return cradle.getValidCasesGenerated();
+  }
+
+  private long getTotalExplored() {
+    return cradle.getTotalExplored();
+  }
+
+  private void printValidVsReached() {
+    System.out.println(getValidCases() + ", " + getTotalExplored());
   }
 
   private BigInteger getTotalNumberOfChoices() {
@@ -178,8 +192,8 @@ public class ProgressBarPrinter implements ITestCaseListener {
 
     ArrayList<Integer> accessed = new ArrayList<Integer>(accessedFields.length);
 
-    for (int i = 0; i < accessedFields.length; ++i)
-      accessed.add(accessedFields[i]);
+    for (int accessedField : accessedFields)
+      accessed.add(accessedField);
 
     for (int i = 0; i < cv.length; ++i) {
       if (!accessed.contains((Integer) i)) {
@@ -197,13 +211,23 @@ public class ProgressBarPrinter implements ITestCaseListener {
   //**************************************************************************************
   static final int maxTurns = 4;
   static final String[] turns = {"\\", "|", "/", "-"};
-  long numCvPerPrint = 1;
+  long numCvPerPrint = 100000;
   long numCvSinceLastPrint = 0;
   int currentTurnNumber = 0;
 
   private void printProgress() {
-    numCvSinceLastPrint++;
-    numCvSinceLastPrint %= numCvPerPrint;
+//  if (numCvSinceLastPrint != 0 ) {
+//    return;
+//  }
+
+//  printValidVsReached();
+
+  numCvSinceLastPrint++;
+  numCvSinceLastPrint %= numCvPerPrint;
+
+  if (numCvSinceLastPrint >= 0) {
+    return;
+  }
 
     if (numCvSinceLastPrint != 0) {
       return;
