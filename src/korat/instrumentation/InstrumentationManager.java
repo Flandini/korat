@@ -30,7 +30,6 @@ public class InstrumentationManager {
         ci.add(new SpecialConstructorInstrumenter());
         ci.add(new FieldInstrumenter());
         ci.add(new ArrayFieldInstrumenter());
-        ci.add(new HashingInstrumenter());
         //ci.add(new TouchInstrumenter());
         instrumenter = ci;
     }

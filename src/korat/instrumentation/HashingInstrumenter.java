@@ -17,6 +17,8 @@ import java.security.NoSuchAlgorithmException;
 // CtClass.getNestedClasses????
 public class HashingInstrumenter extends AbstractInstrumenter {
 
+    public String hash;
+
     private HashSet<CtClass> alreadyInstrumented;
 
     private ArrayList<CtClass> toInstrument;
@@ -38,7 +40,7 @@ public class HashingInstrumenter extends AbstractInstrumenter {
         addClassesForHashing(clz);
         getByteCode();
         byte[] shaHash = getHash();
-        System.out.println(bytesToHex(shaHash));
+        hash = bytesToHexString(shaHash);
     }
 
     public byte[] getHash() {
@@ -118,7 +120,7 @@ public class HashingInstrumenter extends AbstractInstrumenter {
     }
 
     // https://www.baeldung.com/sha-256-hashing-java
-    private static String bytesToHex(byte[] hash) {
+    private static String bytesToHexString(byte[] hash) {
         StringBuffer hexString = new StringBuffer();
         for (int i = 0; i < hash.length; i++) {
             String hex = Integer.toHexString(0xff & hash[i]);

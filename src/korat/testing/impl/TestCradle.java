@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+import javassist.CannotCompileException;
+import javassist.NotFoundException;
 import korat.config.ConfigManager;
 import korat.finitization.IFinitization;
 import korat.finitization.impl.Finitization;
@@ -14,6 +16,7 @@ import korat.finitization.impl.StateSpace;
 import korat.loading.InstrumentingClassLoader;
 import korat.testing.IKoratSearchStrategy;
 import korat.testing.ITester;
+import korat.utils.HistoryManager;
 import korat.utils.IIntList;
 import korat.utils.cv.CVFactory;
 import korat.utils.cv.ICVFactory;
@@ -299,6 +302,22 @@ public class TestCradle extends AbstractTestCaseGenerator implements ITester {
         }
         
         notifyTestFinished(totalExplored, validCasesGenerated);
+
+        try {
+            HistoryManager historyManager = new HistoryManager(testCaseClass,
+                                                               Long.valueOf(config.args[0]),
+                                                               validCasesGenerated,
+                                                               totalExplored);
+            historyManager.save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("Total explored:" + totalExplored);
         System.out.println("New found:" + validCasesGenerated);
