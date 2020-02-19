@@ -12,6 +12,7 @@
         <pathelement location="lib/commons-cli-1.0.jar" />
         <pathelement location="lib/javassist.jar" />
         <pathelement location="lib/junit.jar" />
+        <pathelement location="lib/gson-2.8.6.jar" />
     </path>
 
     <target name="help">
@@ -47,7 +48,7 @@
 
     <target name="build" depends="init">
         <echo message="${ant.project.name}: ${ant.file}" />
-        <javac debug="true" debuglevel="source,lines,vars" destdir="${BUILD_DIR}" source="1.5" target="1.5">
+        <javac debug="true" debuglevel="source,lines,vars" destdir="${BUILD_DIR}">
             <src path="src" />
             <src path="examples" />
             <src path="tests" />
@@ -70,7 +71,7 @@
     <!-- In order to run target tests, junit.jar must be present
          in $ANT_HOME/lib directory -->
     <target name="test" depends="build">
-        <javac debug="true" debuglevel="source,lines,vars" destdir="${BUILD_DIR}" source="1.5" target="1.5">
+        <javac debug="true" debuglevel="source,lines,vars" destdir="${BUILD_DIR}" source="1.8" target="1.8">
             <src path="tests" />
             <classpath refid="Korat.classpath" />
         </javac>
