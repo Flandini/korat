@@ -61,28 +61,46 @@ public class HistoryManager {
         generateHash();
 
         this.previousRuns = loadHistory();
+
+        if (this.previousRuns == null) {
+            this.previousRuns = new Implementation[0];
+        }
     }
 
     public void save() throws FileNotFoundException {
         History thisRun = new History(finBound, explored, valid);
 
-        for (Implementation i : previousRuns) {
-            if (i != null && i.shaHash.equals(this.hash)) {
-                i.add(thisRun);
-                saveToFile();
-                return;
-            }
+        Implementation previous = findPreviousRunWithHash(this.hash);
+        if (previous != null) {
+            previous.add(thisRun);
+            saveToFile();
+            return;
         }
-        
+
         ArrayList<History> newHistoryForImplementation = new ArrayList<History>();
         newHistoryForImplementation.add(thisRun);
         Implementation newTestImplementation = new Implementation(this.hash, newHistoryForImplementation);
 
         List<Implementation> temp = new ArrayList<Implementation>(Arrays.asList(previousRuns));
         temp.add(newTestImplementation);
-        previousRuns = (Implementation[]) temp.toArray();
+        previousRuns = temp.toArray(new Implementation[temp.size()]);
 
         saveToFile();
+    }
+
+    public boolean canPredictModelCount() {
+        Implementation previous = findPreviousRunWithHash(this.hash);
+        if (previous == null) return false;
+        return previous.containsRunWithBound(finBound - 1) &&
+                previous.containsRunWithBound(finBound - 2);
+    }
+
+    public boolean alreadySeen() {
+        if (findPreviousRunWithHash(this.hash) == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void saveToFile() throws FileNotFoundException {
@@ -98,18 +116,14 @@ public class HistoryManager {
     }
 
     private Implementation[] loadHistory() throws IOException {
-        Implementation[] history;
-
         if (historyFileExists()) {
             byte[] rawText = Files.readAllBytes(Paths.get(fileName));
             String rawJson = new String(rawText, StandardCharsets.UTF_8);
-            history = gson.fromJson(rawJson, Implementation[].class);
+            return gson.fromJson(rawJson, Implementation[].class);
         } else {
             createEmptyHistory();
-            history = null;
+            return new Implementation[0];
         }
-
-        return history;
     }
 
     private void createEmptyHistory() {
@@ -127,6 +141,16 @@ public class HistoryManager {
     private void generateHash() throws IOException, CannotCompileException, NotFoundException {
         hasher.instrument(this.toHash);
         this.hash = hasher.hash;
+    }
+
+    private Implementation findPreviousRunWithHash(String hash) {
+        for (Implementation i : previousRuns) {
+            if (i != null && i.shaHash.equals(hash)) {
+                return i;
+            }
+        }
+
+        return null;
     }
 }
 
@@ -181,6 +205,16 @@ class Implementation {
         }
 
         previousRuns.add(newRun);
+    }
+
+    public boolean containsRunWithBound(long bound) {
+        for (History run : previousRuns) {
+            if (run.finitizationBound == bound) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
