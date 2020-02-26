@@ -308,6 +308,7 @@ public class TestCradle extends AbstractTestCaseGenerator implements ITester {
                                                                Long.valueOf(config.args[0]),
                                                                validCasesGenerated,
                                                                totalExplored);
+            System.out.println(historyManager.predictExplored());
             historyManager.save();
         } catch (FileNotFoundException e) {
             e.printStackTrace();

@@ -22,6 +22,8 @@ import java.util.Objects;
 
 import com.google.gson.Gson;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+
 public class HistoryManager {
 
     private String fileName = ".history.json";
@@ -55,13 +57,10 @@ public class HistoryManager {
         this.finBound = finBound;
 
         this.toHash = ClassPool.getDefault().get(clazz.getName());
-
         this.gson = new Gson();
-
         generateHash();
 
         this.previousRuns = loadHistory();
-
         if (this.previousRuns == null) {
             this.previousRuns = new Implementation[0];
         }
@@ -93,6 +92,32 @@ public class HistoryManager {
         if (previous == null) return false;
         return previous.containsRunWithBound(finBound - 1) &&
                 previous.containsRunWithBound(finBound - 2);
+    }
+    
+    public long predictExplored() {
+        if (!canPredictModelCount()) {
+            throw new RuntimeException("Cannot predict model count for run: " + this.hash);
+        }
+
+        Implementation previous = findPreviousRunWithHash(this.hash);
+        History secondToLast = previous.getRunWithBound(finBound - 2);
+        History last = previous.getRunWithBound(finBound - 1);
+
+        SimpleRegression regression = new SimpleRegression(true);
+        regression.addData(((double) finBound - 1), Math.log((double) last.explored));
+        regression.addData(((double) finBound - 2), Math.log((double) secondToLast.explored));
+
+        double lnA = regression.getIntercept();
+        double lnB = regression.getSlope();
+
+        double lnX = lnA + finBound * lnB;
+        double predictedExplored = Math.exp(lnX);
+
+        return Math.round(predictedExplored);
+    }
+
+    public long predictValid() {
+        return 0;
     }
 
     public boolean alreadySeen() {
@@ -215,6 +240,16 @@ class Implementation {
         }
 
         return false;
+    }
+
+    public History getRunWithBound(long bound) {
+        for (History run : previousRuns) {
+            if (run.finitizationBound == bound) {
+                return run;
+            }
+        }
+
+        return null;
     }
 
     @Override
