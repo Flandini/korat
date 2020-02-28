@@ -1,44 +1,42 @@
 #!/usr/bin/ruby
 
+require 'json'
+
 command = "java -Xmx1024M -Xms1024M -noverify -cp "
 command << ".:./ProgressBarPrinter.class:lib/commons-cli-1.0.jar:"
 command << "lib/commons-math3-3.6.1.jar:lib/javassist.jar:dist/korat.jar:"
-command << "lib/gson-2.8.6.jar korat.Korat --showProgress "
-command << "--class " # korat.examples.binarytree.BinaryTree --args "
+command << "lib/gson-2.8.6.jar korat.Korat "
+command << "--class "
 
-classes = [
-  "korat.examples.binarytree.BinaryTree",
-  "korat.examples.searchtree.SearchTree",
+classes = {
+  "korat.examples.binarytree.BinaryTree": 10,
+  "korat.examples.searchtree.SearchTree": 10,
   # "korat.examples.sortedlist.SortedList", 2 args finitization only
-  "korat.examples.singlylinkedlist.SinglyLinkedList",
-  "korat.examples.redblacktree.RedBlackTree",
-  "korat.examples.heaparray.HeapArray",
-  "korat.examples.fibheap.FibonacciHeap",
-  "korat.examples.doublylinkedlist.DoublyLinkedList",
-  "korat.examples.disjset.DisjSet",
-  "korat.examples.dag.DAG",
-  "korat.examples.binheap.BinomialHeap"]
-
-# Max sizes. Those not appearing here should be ran up to 10 times
-class_to_size_mappings = {
-  "korat.examples.dag.DAG": 7,
+  "korat.examples.singlylinkedlist.SinglyLinkedList": 10,
+  "korat.examples.redblacktree.RedBlackTree": 10,
+  "korat.examples.heaparray.HeapArray": 10,
+  "korat.examples.fibheap.FibonacciHeap": 7,
+  "korat.examples.doublylinkedlist.DoublyLinkedList": 10,
   "korat.examples.disjset.DisjSet": 6,
-  "korat.examples.fibheap.FibonacciHeap": 7
+  "korat.examples.dag.DAG": 7,
+  "korat.examples.binheap.BinomialHeap": 10
 }
 
-def run_one(fq_classname, command, class_to_size_mappings, classes)
-  current_command = command
-  current_command << fq_classname
-  current_command << " --args"
-
-  finitization_bound = class_to_size_mappings[fq_classname] || 10
-
-  (1..finitization_bound).each do |i|
-    this = "#{current_command} #{i} >> run_results.txt 2>&1"
-    STDERR.puts this
-    results = `#{this}`
-    STDERR.puts results
-  end
+def run_one(fq_classname, command, max_fin_bound)
+  current_command = "#{command}#{fq_classname} --args #{max_fin_bound-1}"
+  verbose_run_shell_command(current_command)
+  
+  current_command = "#{command}#{fq_classname} --args #{max_fin_bound-2}"
+  verbose_run_shell_command current_command
+  
+  # current_command = "#{command}#{fq_classname} --args #{max_fin_bound}"
+  # verbose_run_shell_command current_command
 end
 
-classes.each { |fq_classname| run_one(fq_classname, command, class_to_size_mappings, classes) }
+def verbose_run_shell_command(txt_cmd)
+  STDERR.puts txt_cmd
+  results = `#{txt_cmd}`
+  STDERR.puts results
+end
+
+classes.each { |fq_classname, max_fin_bound| run_one(fq_classname, command, max_fin_bound) }

@@ -37,6 +37,8 @@ public class HistoryManager {
 
     private long finBound;
 
+    private double time;
+
     private CtClass toHash;
 
     private String hash;
@@ -50,10 +52,11 @@ public class HistoryManager {
         gson = new Gson();
     }
 
-    public HistoryManager(Class clazz, long finBound, long valid, long explored) throws NotFoundException, IOException, CannotCompileException {
+    public HistoryManager(Class clazz, long finBound, long valid, long explored, double time) throws NotFoundException, IOException, CannotCompileException {
         this(clazz, finBound);
         this.valid = valid;
         this.explored = explored;
+        this.time = time;
     }
 
     public HistoryManager(Class clazz, long finBound) throws IOException, NotFoundException, CannotCompileException {
@@ -70,7 +73,7 @@ public class HistoryManager {
     }
 
     public void save() throws FileNotFoundException {
-        History thisRun = new History(finBound, explored, valid);
+        History thisRun = new History(finBound, explored, valid, time);
 
         Implementation previous = findPreviousRunWithHash(this.hash);
         if (previous != null) {
@@ -119,8 +122,97 @@ public class HistoryManager {
         return Math.round(predictedExplored);
     }
 
+    public long predictUpToExplored() {
+        if (!canPredictModelCount()) {
+            throw new RuntimeException("Cannot predict model count for run: " + this.hash);
+        }
+
+        Implementation previous = findPreviousRunWithHash(this.hash);
+        long upToExploredSecondToLast = previous.getUpToExploredForBound(finBound - 2);
+        long upToExploredLast = previous.getUpToExploredForBound(finBound - 1);
+
+        SimpleRegression regression = new SimpleRegression(true);
+        regression.addData(((double) finBound - 1), Math.log((double) upToExploredLast));
+        regression.addData(((double) finBound - 2), Math.log((double) upToExploredSecondToLast));
+
+        double lnA = regression.getIntercept();
+        double lnB = regression.getSlope();
+
+        double lnX = lnA + finBound * lnB;
+        double predictedExplored = Math.exp(lnX);
+
+        return Math.round(predictedExplored);
+    }
+
     public long predictValid() {
-        return 0;
+        if (!canPredictModelCount()) {
+            throw new RuntimeException("Cannot predict model count for run: " + this.hash);
+        }
+
+	    Implementation previous = findPreviousRunWithHash(this.hash);
+        History secondToLast = previous.getRunWithBound(finBound - 2);
+        History last = previous.getRunWithBound(finBound - 1);
+
+        SimpleRegression regression = new SimpleRegression(true);
+        regression.addData(((double) finBound - 1), Math.log((double) last.valid));
+        regression.addData(((double) finBound - 2), Math.log((double) secondToLast.valid));
+
+        double lnA = regression.getIntercept();
+        double lnB = regression.getSlope();
+
+        double lnX = lnA + finBound * lnB;
+        double predictedValid = Math.exp(lnX);
+
+        return Math.round(predictedValid);
+    }
+
+    public long predictUpToValid() {
+        if (!canPredictModelCount()) {
+            throw new RuntimeException("Cannot predict model count for run: " + this.hash);
+        }
+
+        Implementation previous = findPreviousRunWithHash(this.hash);
+        long upToValidSecondToLast = previous.getUpToValidForBound(finBound - 2);
+        long upToValidLast = previous.getUpToValidForBound(finBound - 1);
+
+        SimpleRegression regression = new SimpleRegression(true);
+        regression.addData(((double) finBound - 1), Math.log((double) upToValidLast));
+        regression.addData(((double) finBound - 2), Math.log((double) upToValidSecondToLast));
+
+        double lnA = regression.getIntercept();
+        double lnB = regression.getSlope();
+
+        double lnX = lnA + finBound * lnB;
+        double predictedValid = Math.exp(lnX);
+
+        return Math.round(predictedValid);
+    }
+
+    public double predictTime() {
+        if (!canPredictModelCount()) {
+            throw new RuntimeException("Cannot predict model count for run: " + this.hash);
+        }
+
+        Implementation previous = findPreviousRunWithHash(this.hash);
+        History secondToLast = previous.getRunWithBound(finBound - 2);
+        History last = previous.getRunWithBound(finBound - 1);
+
+        SimpleRegression regression = new SimpleRegression(true);
+        regression.addData(((double) finBound - 1), Math.log((double) last.time));
+        regression.addData(((double) finBound - 2), Math.log((double) secondToLast.time));
+
+        double lnA = regression.getIntercept();
+        double lnB = regression.getSlope();
+
+        double lnX = lnA + finBound * lnB;
+        double predictedTime = Math.exp(lnX);
+
+        return predictedTime;
+    }
+
+    public void printTotals() {
+        Implementation previous = findPreviousRunWithHash(this.hash);
+        previous.printUpTosForBound(this.finBound);
     }
 
     public boolean alreadySeen() {
@@ -129,6 +221,10 @@ public class HistoryManager {
         } else {
             return true;
         }
+    }
+
+    public String getTargetClassHash() {
+	return this.hash;
     }
 
     private void saveToFile() throws FileNotFoundException {
@@ -189,15 +285,19 @@ class History {
 
     public long valid;
 
-    public History(long bound, long explored, long valid) {
+    public double time;
+
+    public History(long bound, long explored, long valid, double time) {
         this.finitizationBound = bound;
         this.explored = explored;
         this.valid = valid;
+        this.time = time;
     }
 
     public void setFields(History other) {
         this.valid = other.valid;
         this.explored = other.explored;
+        this.time = other.time;
     }
 
     @Override
@@ -210,11 +310,12 @@ class History {
 
     @Override
     public int hashCode() {
-        return Objects.hash(finitizationBound, explored, valid);
+        return Objects.hash(finitizationBound, explored, valid, time);
     }
 }
 
 class Implementation {
+
     public String shaHash;
 
     public List<History> previousRuns;
@@ -253,6 +354,45 @@ class Implementation {
         }
 
         return null;
+    }
+
+    public long getUpToExploredForBound(long bound) {
+        long total = 0;
+
+        for (History run : previousRuns) {
+            if (run.finitizationBound <= bound) {
+                total += run.explored;
+            }
+        }
+
+        return total;
+    }
+
+    public long getUpToValidForBound(long bound) {
+        long total = 0;
+
+        for (History run : previousRuns) {
+            if (run.finitizationBound <= bound) {
+                total += run.valid;
+            }
+        }
+
+        return total;
+    }
+
+    public void printUpTosForBound(long bound) {
+        long totalValid = 0;
+        long totalExplored = 0;
+
+        for (History run : previousRuns) {
+            if (run.finitizationBound <= bound) {
+                totalValid += run.valid;
+                totalExplored += run.explored;
+            }
+        }
+
+        System.out.println("Total actual valid: " + totalValid);
+        System.out.println("Total actual explored: " + totalExplored);
     }
 
     @Override

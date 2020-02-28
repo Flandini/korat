@@ -1,0 +1,819 @@
+
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [1])
+
+
+Total explored:4
+New found:1
+
+End of Korat Execution
+Overall time: 0.134 s.
+
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [2])
+
+
+Total explored:16
+New found:2
+
+End of Korat Execution
+Overall time: 0.136 s.
+
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [3])
+
+
+Total explored:63
+New found:5
+
+End of Korat Execution
+Overall time: 0.142 s.
+
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [4])
+
+
+Total explored:245
+New found:14
+
+End of Korat Execution
+Overall time: 0.142 s.
+
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [5])
+
+
+Total explored:947
+New found:42
+
+End of Korat Execution
+Overall time: 0.152 s.
+
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [6])
+
+
+Total explored:3653
+New found:132
+
+End of Korat Execution
+Overall time: 0.17 s.
+
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [7])
+
+
+Total explored:14092
+New found:429
+
+End of Korat Execution
+Overall time: 0.216 s.
+
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [8])
+
+
+Total explored:54418
+New found:1430
+
+End of Korat Execution
+Overall time: 0.309 s.
+
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [9])
+
+
+Total explored:210444
+New found:4862
+
+End of Korat Execution
+Overall time: 0.572 s.
+
+Start of Korat Execution for korat.examples.binarytree.BinaryTree (repOK, [10])
+
+
+Total explored:815100
+New found:16796
+
+End of Korat Execution
+Overall time: 1.147 s.
+
+Start of Korat Execution for korat.examples.searchtree.SearchTree (repOK, [1])
+
+
+Total explored:4
+New found:1
+
+End of Korat Execution
+Overall time: 0.156 s.
+
+Start of Korat Execution for korat.examples.searchtree.SearchTree (repOK, [2])
+
+
+Total explored:22
+New found:2
+
+End of Korat Execution
+Overall time: 0.158 s.
+
+Start of Korat Execution for korat.examples.searchtree.SearchTree (repOK, [3])
+
+
+Total explored:133
+New found:5
+
+End of Korat Execution
+Overall time: 0.157 s.
+
+Start of Korat Execution for korat.examples.searchtree.SearchTree (repOK, [4])
+
+
+Total explored:875
+New found:14
+
+End of Korat Execution
+Overall time: 0.172 s.
+
+Start of Korat Execution for korat.examples.searchtree.SearchTree (repOK, [5])
+
+
+Total explored:6155
+New found:42
+
+End of Korat Execution
+Overall time: 0.208 s.
+
+Start of Korat Execution for korat.examples.searchtree.SearchTree (repOK, [6])
+
+
+Total explored:45233
+New found:132
+
+End of Korat Execution
+Overall time: 0.296 s.
+
+Start of Korat Execution for korat.examples.searchtree.SearchTree (repOK, [7])
+
+
+Total explored:340990
+New found:429
+
+End of Korat Execution
+Overall time: 0.71 s.
+
+Start of Korat Execution for korat.examples.searchtree.SearchTree (repOK, [8])
+
+
+Total explored:2606968
+New found:1430
+
+End of Korat Execution
+Overall time: 3.319 s.
+
+Start of Korat Execution for korat.examples.searchtree.SearchTree (repOK, [9])
+
+
+Total explored:20086300
+New found:4862
+
+End of Korat Execution
+Overall time: 26.825 s.
+
+Start of Korat Execution for korat.examples.searchtree.SearchTree (repOK, [10])
+
+
+Total explored:155455872
+New found:16796
+
+End of Korat Execution
+Overall time: 241.182 s.
+
+Start of Korat Execution for korat.examples.singlylinkedlist.SinglyLinkedList (repOK, [1])
+
+
+Total explored:8
+New found:1
+
+End of Korat Execution
+Overall time: 0.16 s.
+
+Start of Korat Execution for korat.examples.singlylinkedlist.SinglyLinkedList (repOK, [2])
+
+
+Total explored:17
+New found:2
+
+End of Korat Execution
+Overall time: 0.16 s.
+
+Start of Korat Execution for korat.examples.singlylinkedlist.SinglyLinkedList (repOK, [3])
+
+
+Total explored:44
+New found:5
+
+End of Korat Execution
+Overall time: 0.176 s.
+
+Start of Korat Execution for korat.examples.singlylinkedlist.SinglyLinkedList (repOK, [4])
+
+
+Total explored:139
+New found:15
+
+End of Korat Execution
+Overall time: 0.181 s.
+
+Start of Korat Execution for korat.examples.singlylinkedlist.SinglyLinkedList (repOK, [5])
+
+
+Total explored:518
+New found:52
+
+End of Korat Execution
+Overall time: 0.205 s.
+
+Start of Korat Execution for korat.examples.singlylinkedlist.SinglyLinkedList (repOK, [6])
+
+
+Total explored:2194
+New found:203
+
+End of Korat Execution
+Overall time: 0.213 s.
+
+Start of Korat Execution for korat.examples.singlylinkedlist.SinglyLinkedList (repOK, [7])
+
+
+Total explored:10290
+New found:877
+
+End of Korat Execution
+Overall time: 0.25 s.
+
+Start of Korat Execution for korat.examples.singlylinkedlist.SinglyLinkedList (repOK, [8])
+
+
+Total explored:52567
+New found:4140
+
+End of Korat Execution
+Overall time: 0.332 s.
+
+Start of Korat Execution for korat.examples.singlylinkedlist.SinglyLinkedList (repOK, [9])
+
+
+Total explored:289324
+New found:21147
+
+End of Korat Execution
+Overall time: 0.67 s.
+
+Start of Korat Execution for korat.examples.singlylinkedlist.SinglyLinkedList (repOK, [10])
+
+
+Total explored:1702171
+New found:115975
+
+End of Korat Execution
+Overall time: 2.311 s.
+
+Start of Korat Execution for korat.examples.redblacktree.RedBlackTree (repOK, [1])
+
+
+Total explored:8
+New found:2
+
+End of Korat Execution
+Overall time: 0.207 s.
+
+Start of Korat Execution for korat.examples.redblacktree.RedBlackTree (repOK, [2])
+
+
+Total explored:40
+New found:2
+
+End of Korat Execution
+Overall time: 0.194 s.
+
+Start of Korat Execution for korat.examples.redblacktree.RedBlackTree (repOK, [3])
+
+
+Total explored:179
+New found:3
+
+End of Korat Execution
+Overall time: 0.274 s.
+
+Start of Korat Execution for korat.examples.redblacktree.RedBlackTree (repOK, [4])
+
+
+Total explored:961
+New found:8
+
+End of Korat Execution
+Overall time: 0.357 s.
+
+Start of Korat Execution for korat.examples.redblacktree.RedBlackTree (repOK, [5])
+
+
+Total explored:4209
+New found:14
+
+End of Korat Execution
+Overall time: 0.331 s.
+
+Start of Korat Execution for korat.examples.redblacktree.RedBlackTree (repOK, [6])
+
+
+Total explored:16487
+New found:20
+
+End of Korat Execution
+Overall time: 0.333 s.
+
+Start of Korat Execution for korat.examples.redblacktree.RedBlackTree (repOK, [7])
+
+
+Total explored:71704
+New found:35
+
+End of Korat Execution
+Overall time: 0.685 s.
+
+Start of Korat Execution for korat.examples.redblacktree.RedBlackTree (repOK, [8])
+
+
+Total explored:322806
+New found:64
+
+End of Korat Execution
+Overall time: 1.524 s.
+
+Start of Korat Execution for korat.examples.redblacktree.RedBlackTree (repOK, [9])
+
+
+Total explored:1510006
+New found:122
+
+End of Korat Execution
+Overall time: 5.409 s.
+
+Start of Korat Execution for korat.examples.redblacktree.RedBlackTree (repOK, [10])
+
+
+Total explored:7530712
+New found:260
+
+End of Korat Execution
+Overall time: 25.991 s.
+
+Start of Korat Execution for korat.examples.heaparray.HeapArray (repOK, [1])
+
+
+Total explored:8
+New found:4
+
+End of Korat Execution
+Overall time: 0.179 s.
+
+Start of Korat Execution for korat.examples.heaparray.HeapArray (repOK, [2])
+
+
+Total explored:45
+New found:15
+
+End of Korat Execution
+Overall time: 0.174 s.
+
+Start of Korat Execution for korat.examples.heaparray.HeapArray (repOK, [3])
+
+
+Total explored:240
+New found:66
+
+End of Korat Execution
+Overall time: 0.179 s.
+
+Start of Korat Execution for korat.examples.heaparray.HeapArray (repOK, [4])
+
+
+Total explored:1425
+New found:320
+
+End of Korat Execution
+Overall time: 0.18 s.
+
+Start of Korat Execution for korat.examples.heaparray.HeapArray (repOK, [5])
+
+
+Total explored:8916
+New found:1919
+
+End of Korat Execution
+Overall time: 0.245 s.
+
+Start of Korat Execution for korat.examples.heaparray.HeapArray (repOK, [6])
+
+
+Total explored:64533
+New found:13139
+
+End of Korat Execution
+Overall time: 0.345 s.
+
+Start of Korat Execution for korat.examples.heaparray.HeapArray (repOK, [7])
+
+
+Total explored:519968
+New found:117562
+
+End of Korat Execution
+Overall time: 0.657 s.
+
+Start of Korat Execution for korat.examples.heaparray.HeapArray (repOK, [8])
+
+
+Total explored:5231385
+New found:1005075
+
+End of Korat Execution
+Overall time: 2.987 s.
+
+Start of Korat Execution for korat.examples.heaparray.HeapArray (repOK, [9])
+
+
+Total explored:51460480
+New found:10391382
+
+End of Korat Execution
+Overall time: 25.606 s.
+
+Start of Korat Execution for korat.examples.heaparray.HeapArray (repOK, [10])
+
+
+Total explored:583317405
+New found:111511015
+
+End of Korat Execution
+Overall time: 294.733 s.
+
+Start of Korat Execution for korat.examples.fibheap.FibonacciHeap (repOK, [1])
+
+
+Total explored:10
+New found:2
+
+End of Korat Execution
+Overall time: 0.196 s.
+
+Start of Korat Execution for korat.examples.fibheap.FibonacciHeap (repOK, [2])
+
+
+Total explored:96
+New found:12
+
+End of Korat Execution
+Overall time: 0.229 s.
+
+Start of Korat Execution for korat.examples.fibheap.FibonacciHeap (repOK, [3])
+
+
+Total explored:803
+New found:136
+
+End of Korat Execution
+Overall time: 0.242 s.
+
+Start of Korat Execution for korat.examples.fibheap.FibonacciHeap (repOK, [4])
+
+
+Total explored:8634
+New found:2310
+
+End of Korat Execution
+Overall time: 0.31 s.
+
+Start of Korat Execution for korat.examples.fibheap.FibonacciHeap (repOK, [5])
+
+
+Total explored:164365
+New found:52281
+
+End of Korat Execution
+Overall time: 0.762 s.
+
+Start of Korat Execution for korat.examples.fibheap.FibonacciHeap (repOK, [6])
+
+
+Total explored:4809294
+New found:1474186
+
+End of Korat Execution
+Overall time: 8.959 s.
+
+Start of Korat Execution for korat.examples.fibheap.FibonacciHeap (repOK, [7])
+
+
+Total explored:175980937
+New found:49698272
+
+End of Korat Execution
+Overall time: 355.969 s.
+
+Start of Korat Execution for korat.examples.fibheap.FibonacciHeap (repOK, [8])
+
+
+Start of Korat Execution for korat.examples.doublylinkedlist.DoublyLinkedList (repOK, [1])
+
+
+Total explored:13
+New found:1
+
+End of Korat Execution
+Overall time: 0.166 s.
+
+Start of Korat Execution for korat.examples.doublylinkedlist.DoublyLinkedList (repOK, [2])
+
+
+Total explored:27
+New found:3
+
+End of Korat Execution
+Overall time: 0.16 s.
+
+Start of Korat Execution for korat.examples.doublylinkedlist.DoublyLinkedList (repOK, [3])
+
+
+Total explored:49
+New found:10
+
+End of Korat Execution
+Overall time: 0.17 s.
+
+Start of Korat Execution for korat.examples.doublylinkedlist.DoublyLinkedList (repOK, [4])
+
+
+Total explored:94
+New found:37
+
+End of Korat Execution
+Overall time: 0.167 s.
+
+Start of Korat Execution for korat.examples.doublylinkedlist.DoublyLinkedList (repOK, [5])
+
+
+Total explored:229
+New found:151
+
+End of Korat Execution
+Overall time: 0.176 s.
+
+Start of Korat Execution for korat.examples.doublylinkedlist.DoublyLinkedList (repOK, [6])
+
+
+Total explored:776
+New found:674
+
+End of Korat Execution
+Overall time: 0.184 s.
+
+Start of Korat Execution for korat.examples.doublylinkedlist.DoublyLinkedList (repOK, [7])
+
+
+Total explored:3392
+New found:3263
+
+End of Korat Execution
+Overall time: 0.213 s.
+
+Start of Korat Execution for korat.examples.doublylinkedlist.DoublyLinkedList (repOK, [8])
+
+
+Total explored:17166
+New found:17007
+
+End of Korat Execution
+Overall time: 0.273 s.
+
+Start of Korat Execution for korat.examples.doublylinkedlist.DoublyLinkedList (repOK, [9])
+
+
+Total explored:95020
+New found:94828
+
+End of Korat Execution
+Overall time: 0.557 s.
+
+Start of Korat Execution for korat.examples.doublylinkedlist.DoublyLinkedList (repOK, [10])
+
+
+Total explored:562823
+New found:562595
+
+End of Korat Execution
+Overall time: 1.635 s.
+
+Start of Korat Execution for korat.examples.disjset.DisjSet (repOK, [1])
+
+
+Total explored:4
+New found:2
+
+End of Korat Execution
+Overall time: 0.153 s.
+
+Start of Korat Execution for korat.examples.disjset.DisjSet (repOK, [2])
+
+
+Total explored:24
+New found:5
+
+End of Korat Execution
+Overall time: 0.157 s.
+
+Start of Korat Execution for korat.examples.disjset.DisjSet (repOK, [3])
+
+
+Total explored:278
+New found:38
+
+End of Korat Execution
+Overall time: 0.18 s.
+
+Start of Korat Execution for korat.examples.disjset.DisjSet (repOK, [4])
+
+
+Total explored:7915
+New found:914
+
+End of Korat Execution
+Overall time: 0.232 s.
+
+Start of Korat Execution for korat.examples.disjset.DisjSet (repOK, [5])
+
+
+Total explored:413855
+New found:41546
+
+End of Korat Execution
+Overall time: 1.04 s.
+
+Start of Korat Execution for korat.examples.disjset.DisjSet (repOK, [6])
+
+
+Total explored:33436639
+New found:2967087
+
+End of Korat Execution
+Overall time: 33.939 s.
+
+Start of Korat Execution for korat.examples.disjset.DisjSet (repOK, [7])
+
+
+Start of Korat Execution for korat.examples.dag.DAG (repOK, [1])
+
+
+Total explored:1
+New found:0
+
+End of Korat Execution
+Overall time: 0.175 s.
+
+Start of Korat Execution for korat.examples.dag.DAG (repOK, [2])
+
+
+Total explored:3
+New found:1
+
+End of Korat Execution
+Overall time: 0.176 s.
+
+Start of Korat Execution for korat.examples.dag.DAG (repOK, [3])
+
+
+Total explored:16
+New found:4
+
+End of Korat Execution
+Overall time: 0.173 s.
+
+Start of Korat Execution for korat.examples.dag.DAG (repOK, [4])
+
+
+Total explored:182
+New found:35
+
+End of Korat Execution
+Overall time: 0.19 s.
+
+Start of Korat Execution for korat.examples.dag.DAG (repOK, [5])
+
+
+Total explored:4301
+New found:584
+
+End of Korat Execution
+Overall time: 0.241 s.
+
+Start of Korat Execution for korat.examples.dag.DAG (repOK, [6])
+
+
+Total explored:204893
+New found:19696
+
+End of Korat Execution
+Overall time: 1.077 s.
+
+Start of Korat Execution for korat.examples.dag.DAG (repOK, [7])
+
+
+Total explored:20128126
+New found:1410723
+
+End of Korat Execution
+Overall time: 83.51 s.
+
+Start of Korat Execution for korat.examples.dag.DAG (repOK, [8])
+
+
+Start of Korat Execution for korat.examples.binheap.BinomialHeap (repOK, [1])
+
+
+Total explored:8
+New found:2
+
+End of Korat Execution
+Overall time: 0.193 s.
+
+Start of Korat Execution for korat.examples.binheap.BinomialHeap (repOK, [2])
+
+
+Total explored:58
+New found:6
+
+End of Korat Execution
+Overall time: 0.177 s.
+
+Start of Korat Execution for korat.examples.binheap.BinomialHeap (repOK, [3])
+
+
+Total explored:335
+New found:28
+
+End of Korat Execution
+Overall time: 0.191 s.
+
+Start of Korat Execution for korat.examples.binheap.BinomialHeap (repOK, [4])
+
+
+Total explored:1666
+New found:120
+
+End of Korat Execution
+Overall time: 0.326 s.
+
+Start of Korat Execution for korat.examples.binheap.BinomialHeap (repOK, [5])
+
+
+Total explored:8122
+New found:936
+
+End of Korat Execution
+Overall time: 0.336 s.
+
+Start of Korat Execution for korat.examples.binheap.BinomialHeap (repOK, [6])
+
+
+Total explored:42815
+New found:7602
+
+End of Korat Execution
+Overall time: 0.431 s.
+
+Start of Korat Execution for korat.examples.binheap.BinomialHeap (repOK, [7])
+
+
+Total explored:261788
+New found:107416
+
+End of Korat Execution
+Overall time: 2.476 s.
+
+Start of Korat Execution for korat.examples.binheap.BinomialHeap (repOK, [8])
+
+
+Total explored:1323194
+New found:603744
+
+End of Korat Execution
+Overall time: 7.591 s.
+
+Start of Korat Execution for korat.examples.binheap.BinomialHeap (repOK, [9])
+
+
+Total explored:11778107
+New found:8746120
+
+End of Korat Execution
+Overall time: 236.114 s.
+
+Start of Korat Execution for korat.examples.binheap.BinomialHeap (repOK, [10])
+
+
+Total explored:150727471
+New found:117157172
+
+End of Korat Execution
+Overall time: 914.585 s.
