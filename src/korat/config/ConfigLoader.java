@@ -85,7 +85,10 @@ public class ConfigLoader {
 
     public static final MyOption SHOW_PROGRESS = new MyOption(
         "p", "showProgress", "print progress bar", false, false, "", "false");
-    
+
+    public static final MyOption PREDICT_USING_HISTORY = new MyOption(
+            "p", "predictUsingHistory", "predict history using a previous n-2 and n-1 finitization bound (if present)", false, false, "", "false");
+
     public static final MyOption CV_WRITE_NUM = new MyOption( 
         "W", "cvWriteNum", "write only num equi-distant vectors to disk", false, true, "num", "-1");
     

@@ -47,17 +47,20 @@ public class HistoryManager {
 
     public HistoryManager() {
         hasher = new HashingInstrumenter();
+        gson = new Gson();
     }
 
     public HistoryManager(Class clazz, long finBound, long valid, long explored) throws NotFoundException, IOException, CannotCompileException {
-        this();
-
+        this(clazz, finBound);
         this.valid = valid;
         this.explored = explored;
-        this.finBound = finBound;
+    }
 
+    public HistoryManager(Class clazz, long finBound) throws IOException, NotFoundException, CannotCompileException {
+        this();
+
+        this.finBound = finBound;
         this.toHash = ClassPool.getDefault().get(clazz.getName());
-        this.gson = new Gson();
         generateHash();
 
         this.previousRuns = loadHistory();
@@ -93,7 +96,7 @@ public class HistoryManager {
         return previous.containsRunWithBound(finBound - 1) &&
                 previous.containsRunWithBound(finBound - 2);
     }
-    
+
     public long predictExplored() {
         if (!canPredictModelCount()) {
             throw new RuntimeException("Cannot predict model count for run: " + this.hash);

@@ -118,6 +118,12 @@ public class ConfigManager {
      */
     public boolean showProgress;
 
+    /*
+     * Use the past runs (n-2) and (n-1)--where n is the current finitization bound--to
+     * predict the number of explored and valid candidates for the current run, run n.
+     */
+    public boolean predictUsingHistory;
+
     /**
      * Number of equi-distant vectors to be written to disk (makes sense only if
      * <code>cvFrite</code> is set to <code>true</code>.

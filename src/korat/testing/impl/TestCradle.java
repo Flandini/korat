@@ -178,8 +178,21 @@ public class TestCradle extends AbstractTestCaseGenerator implements ITester {
         finName = config.finitization;
         Method finitize = getFinMethod(clazz, finName, finArgs);
         IFinitization fin = invokeFinMethod(clazz, finitize, finArgs);
-        startTestGeneration(fin);
 
+        if (config.predictUsingHistory) {
+            try {
+                HistoryManager history = new HistoryManager(clazz, Long.parseLong(config.args[0]));
+                System.out.println("Predicted explored: " + history.predictExplored());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NotFoundException e) {
+                e.printStackTrace();
+            } catch (CannotCompileException e) {
+                e.printStackTrace();
+            }
+        } else {
+            startTestGeneration(fin);
+        }
     }
 
     private Method getFinMethod(Class cls, String finName, String[] finArgs)
@@ -303,22 +316,7 @@ public class TestCradle extends AbstractTestCaseGenerator implements ITester {
         
         notifyTestFinished(totalExplored, validCasesGenerated);
 
-        try {
-            HistoryManager historyManager = new HistoryManager(testCaseClass,
-                                                               Long.valueOf(config.args[0]),
-                                                               validCasesGenerated,
-                                                               totalExplored);
-            System.out.println(historyManager.predictExplored());
-            historyManager.save();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CannotCompileException e) {
-            e.printStackTrace();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
+        saveHistory(testCaseClass, config, validCasesGenerated, totalExplored);
 
         System.out.println("Total explored:" + totalExplored);
         System.out.println("New found:" + validCasesGenerated);
@@ -447,4 +445,21 @@ public class TestCradle extends AbstractTestCaseGenerator implements ITester {
         }
     }
 
+    private void saveHistory(Class clazz, ConfigManager config, long explored, long valid) {
+        try {
+            HistoryManager historyManager = new HistoryManager(clazz,
+                                                               Long.valueOf(config.args[0]),
+                                                               valid,
+                                                               explored);
+            historyManager.save();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 }
